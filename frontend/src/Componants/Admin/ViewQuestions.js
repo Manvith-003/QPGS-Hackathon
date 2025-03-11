@@ -16,13 +16,22 @@ import {
   DialogContent,
   DialogActions,
   Button,
-  TextField
+  TextField,
+  MenuItem,
+  Select,
+  FormControl,
+  InputLabel,
+  Grid
 } from "@mui/material";
 import EditIcon from "@mui/icons-material/Edit";
 import DeleteIcon from "@mui/icons-material/Delete";
 
 function ViewQuestions() {
   const [questions, setQuestions] = useState([]);
+  const [filteredQuestions, setFilteredQuestions] = useState([]);
+  const [subjects, setSubjects] = useState([]);
+  const [selectedSubject, setSelectedSubject] = useState("");
+
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [currentQuestion, setCurrentQuestion] = useState({
     _id: "",
@@ -34,7 +43,7 @@ function ViewQuestions() {
     part: "",
   });
 
-  // ✅ Fetch questions from backend
+  // ✅ Fetch questions and subjects from backend
   useEffect(() => {
     fetchQuestions();
   }, []);
@@ -43,9 +52,20 @@ function ViewQuestions() {
     try {
       const response = await axios.get("http://localhost:3001/api/questions");
       setQuestions(response.data);
+
+      // Extract unique subjects from questions
+      const uniqueSubjects = [...new Set(response.data.map(q => q.subject))];
+      setSubjects(uniqueSubjects);
     } catch (error) {
       console.error("❌ Error fetching questions:", error);
     }
+  };
+
+  // ✅ Handle subject selection change
+  const handleSubjectChange = (event) => {
+    setSelectedSubject(event.target.value);
+    const filtered = questions.filter(q => q.subject === event.target.value);
+    setFilteredQuestions(filtered);
   };
 
   // ✅ Handle delete operation
@@ -90,11 +110,29 @@ function ViewQuestions() {
   };
 
   return (
-    <Box>
+    <Box sx={{ p: 3 }}>
       <Typography variant="h4" fontWeight="bold" gutterBottom>
         View Questions
       </Typography>
 
+      {/* Subject Dropdown (Aligned using Grid) */}
+      <Grid container spacing={2} alignItems="center" sx={{ mb: 3 }}>
+        <Grid item xs={12} sm={6} md={4}>
+          <FormControl fullWidth variant="outlined">
+            <InputLabel>Select Subject</InputLabel>
+            <Select value={selectedSubject} onChange={handleSubjectChange} label="Select Subject">
+              <MenuItem value="">All Subjects</MenuItem>
+              {subjects.map((subject, index) => (
+                <MenuItem key={index} value={subject}>
+                  {subject}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Grid>
+      </Grid>
+
+      {/* Questions Table */}
       <TableContainer component={Paper}>
         <Table>
           <TableHead>
@@ -109,7 +147,7 @@ function ViewQuestions() {
             </TableRow>
           </TableHead>
           <TableBody>
-            {questions.map((q) => (
+            {(selectedSubject ? filteredQuestions : questions).map((q) => (
               <TableRow key={q._id}>
                 <TableCell>{q.subject}</TableCell>
                 <TableCell>{q.module}</TableCell>
@@ -137,23 +175,28 @@ function ViewQuestions() {
       <Dialog open={editDialogOpen} onClose={handleEditClose} fullWidth>
         <DialogTitle>Edit Question</DialogTitle>
         <DialogContent>
-          {Object.keys(currentQuestion).map((key) => (
-            key !== "_id" && (
-              <TextField
-                key={key}
-                fullWidth
-                margin="dense"
-                label={key}
-                name={key}
-                value={currentQuestion[key]}
-                onChange={handleEditChange}
-              />
-            )
-          ))}
+          {Object.keys(currentQuestion).map(
+            (key) =>
+              key !== "_id" && (
+                <TextField
+                  key={key}
+                  fullWidth
+                  margin="dense"
+                  label={key}
+                  name={key}
+                  value={currentQuestion[key]}
+                  onChange={handleEditChange}
+                />
+              )
+          )}
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleEditClose} color="secondary">Cancel</Button>
-          <Button onClick={handleEditSave} color="primary" variant="contained">Save</Button>
+          <Button onClick={handleEditClose} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleEditSave} color="primary" variant="contained">
+            Save
+          </Button>
         </DialogActions>
       </Dialog>
     </Box>

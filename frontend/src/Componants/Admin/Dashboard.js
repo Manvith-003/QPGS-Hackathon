@@ -8,6 +8,7 @@ import QuestionAnswerIcon from '@mui/icons-material/QuestionAnswer';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import GenerateQuestion from './GenerateQuestion';
+import ViewQuestionPaper from './ViewQuestionpaper';
 
 function Dashboard() {
   return (
@@ -70,6 +71,16 @@ function Dashboard() {
   </ListItemButton>
 </ListItem>
 
+<ListItem disablePadding>
+  <ListItemButton component={Link} to="/view-question-paper">
+    <ListItemIcon>
+      <VisibilityIcon sx={{ color: '#ffffff' }} />
+    </ListItemIcon>
+    <ListItemText primary="View Question Paper" />
+  </ListItemButton>
+</ListItem>
+
+
         </List>
       </Box>
 
@@ -84,6 +95,7 @@ function Dashboard() {
           <Route path="/view-questions" element={<ViewQuestions />} />
           {/* Home Route */}
           <Route path="/generate-question" element={<GenerateQuestion />} />
+          <Route path="/view-question-paper" element={<ViewQuestionPaper />} />
           <Route
             path="/"
             element={
