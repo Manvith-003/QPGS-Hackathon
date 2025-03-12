@@ -32,14 +32,14 @@ const ViewQuestionPaper = () => {
       try {
         const response = await axios.get("http://localhost:3001/api/questionPapers/getAll");
         setQuestionPapers(response.data);
-
+        
         const uniqueSubjects = [...new Set(response.data.map((paper) => paper.subject))];
         setSubjects(uniqueSubjects);
       } catch (error) {
         console.error("❌ Error fetching question papers:", error);
       }
     };
-
+    
     fetchQuestionPapers();
   }, []);
 
@@ -91,53 +91,24 @@ const ViewQuestionPaper = () => {
   };
 
   return (
-    <Box sx={{ width: "70%", margin: "auto", padding: 3 }}>
+    <Box sx={{ width: "100%", maxWidth: 900, margin: "auto", padding: 3 }}>
       <Typography variant="h4" fontWeight="bold" textAlign="center" gutterBottom>
         View & Download Question Papers
       </Typography>
 
-      {/* Improved Dropdown Display */}
       <Box sx={{ mb: 2 }}>
         <Typography sx={{ fontWeight: "bold", mb: 1, color: "#1565c0" }}>
           Select Subject
         </Typography>
-        <FormControl
-          sx={{
-            width: "350px", // Increased Width
-            backgroundColor: "#ffffff",
-            borderRadius: "8px",
-            "& .MuiOutlinedInput-root": {
-              height: "50px", // Increased Height
-              borderRadius: "8px",
-              "& fieldset": { borderColor: "#1976d2" },
-              "&:hover fieldset": { borderColor: "#1565c0" },
-              "&.Mui-focused fieldset": { borderColor: "#0d47a1" },
-            },
-          }}
-        >
+        <FormControl fullWidth>
           <Select
             value={selectedSubject}
             onChange={(e) => setSelectedSubject(e.target.value)}
             displayEmpty
-            sx={{
-              fontWeight: "bold",
-              fontSize: "1rem",
-              padding: "10px",
-              color: "#333",
-            }}
           >
             {subjects.length > 0 ? (
               subjects.map((subject) => (
-                <MenuItem
-                  key={subject}
-                  value={subject}
-                  sx={{
-                    fontSize: "1rem",
-                    "&:hover": { backgroundColor: "#e3f2fd" },
-                  }}
-                >
-                  {subject}
-                </MenuItem>
+                <MenuItem key={subject} value={subject}>{subject}</MenuItem>
               ))
             ) : (
               <MenuItem disabled>No subjects available</MenuItem>
@@ -163,18 +134,11 @@ const ViewQuestionPaper = () => {
                     <TableCell>{paper.name}</TableCell>
                     <TableCell>{paper.subject}</TableCell>
                     <TableCell>
-                      <Button
-                        variant="contained"
-                        color="primary"
-                        sx={{ fontSize: "0.8rem", padding: "5px 10px" }}
-                        onClick={() => downloadPDF(paper)}
-                      >
+                      <Button variant="contained" color="primary" onClick={() => downloadPDF(paper)}>
                         Download PDF
                       </Button>
                     </TableCell>
                   </TableRow>
-
-                  {/* Expandable Section for Viewing Questions */}
                   <TableRow>
                     <TableCell colSpan={3}>
                       <Accordion>
@@ -184,16 +148,11 @@ const ViewQuestionPaper = () => {
                         <AccordionDetails>
                           <Typography fontWeight="bold">Part A - (5 x 2 = 10 Marks)</Typography>
                           {paper.partA.map((q, index) => (
-                            <Typography key={index}>
-                              {index + 1}. {q.question} ({q.marks} Marks)
-                            </Typography>
+                            <Typography key={index}>{index + 1}. {q.question}</Typography>
                           ))}
-                          <br />
                           <Typography fontWeight="bold">Part B - (5 x 8 = 40 Marks)</Typography>
                           {paper.partB.map((q, index) => (
-                            <Typography key={index}>
-                              {index + 6}. {q.question} ({q.marks} Marks)
-                            </Typography>
+                            <Typography key={index}>{index + 6}. {q.question}</Typography>
                           ))}
                         </AccordionDetails>
                       </Accordion>
@@ -204,15 +163,7 @@ const ViewQuestionPaper = () => {
             </TableBody>
           </Table>
         </TableContainer>
-      ) : selectedSubject ? (
-        <Typography textAlign="center" sx={{ mt: 2, color: "red" }}>
-          No question papers available for this subject.
-        </Typography>
-      ) : (
-        <Typography textAlign="center" sx={{ mt: 2 }}>
-          Select a subject to view question papers.
-        </Typography>
-      )}
+      ) : <Typography textAlign="center">Select a subject to view question papers.</Typography>}
     </Box>
   );
 };

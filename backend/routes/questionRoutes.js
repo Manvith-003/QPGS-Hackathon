@@ -1,6 +1,7 @@
 import express from "express";
 import Questions from "../models/questionModel.js";
 
+
 const router = express.Router();
 
 // ✅ GET - Fetch questions

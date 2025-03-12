@@ -4,10 +4,10 @@ import { mongoUrl } from "../utils/url.js";
 const connectDb = async () => {
     try {
         await mongoose.connect(mongoUrl);
-        console.log("conneted to db...")
+        console.log("✅ Connected to MongoDB...");
     } catch (error) {
-        console.log(error.message)
+        console.error("❌ MongoDB Connection Error:", error.message);
     }
-}
+};
 
 export { connectDb };
